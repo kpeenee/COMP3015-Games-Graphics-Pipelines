@@ -1,0 +1,54 @@
+<h1>Project write up<h1>
+
+<h2>Technology<h2>  
+- Windows 10
+- Visual studio 2019  
+
+<h2>How the project works<h2>  
+This project consists of a central model called **Craig** and he is standing in an environment filled with bricks. 
+For this project I have used the Blinn phong lighting model, multiple textures and some toon shading.  
+
+For the Blinn phong model, 3 lights in the scene. Each light has a position, ambient, diffuse, and specular 
+intensity. This array of lights is set up in the fragment shader as a uniform struct called **LightInfo**. In the **initScene** method of scenebasic_uniform.cpp 
+these uniforms are set so they can be used for calculations. For the blinn phong model the objects material needs to be known 
+as well so another uniform struct called **MaterialInfo** is created in the fragment shader. This struct takes in a value for diffuse, specular and
+ambient reflectivity and a value for shininess. These values are set for each object in the **render** method of scenbasic_uniform. 
+The final piece of infomation needed for the lighting is the **normal** and **position** of the model in view coordinates. This is 
+done in the vertex shader by using these formulas.  
+- Normal = normalize( NormalMatrix * VertexNormal);
+- Position =  (ModelViewMatrix * vec4(VertexPosition,1.0)).xyz;  
+Once these values have been worked out, they are sent from the vertex shader to the fragment shader.  
+The ambient colour is worked out simply by using the lights ambient intensity and multiplying it by the materials ambient reflectivity.
+For diffuse, first calculate the direction of the light. This is worked out by normalizing the current lights position 
+take away the objects position in view coordinates. Next, the dot product between the light direction vector and normal vector is worked out. 
+Both vectors must be normalized and using the glsl function **max**, a value between 0 and 1 will be returned. This value determines the 
+intensity of diffuse and is finally multiplied by the materials diffuse reflectivity.  
+Finally specular is worked out, this is done in a different way to the usual phong lighting model. In blinn phong a half vector 
+is calculated by adding the ligth direction vector and the objects view vector together. This half vector is then used to work out the 
+dot product between itself and the objects normal and raised to the power of the objects shininess. 
+Finally the dot product is multiplied the materials specular reflectivity. 
+With all the light values worked out they are finally brought together using this formula **ambient + Lights[light].L * (diffuse + spec);**  
+
+For the textures, they are each bound to a sampler2D. In the vertex shader a value for the texture cordinate is sent to the fragment 
+shader. For the scene **Craig** has a base texture for himself and another texture with dirt that is placed ontop. 
+This is done in the fragment shader by working out the current fragment colour for both base and dirt textures using the glsl funtion **texture**, 
+and then these colours get mixed together using the glsl function **mix**. This mixed colour can then be used in the calculations for 
+ambient and diffuse lighting by simply multiplying them by the mixed colour. 
+
+For toon shading, two constants are created in the fragment shader one for the amount of levels of shading, and a scale factor to be used in calculation. 
+The scale factor is worked out by doing 1/levels. All that needs to be changed if the formula for working out the diffuse colour. This is changed to  
+Material.Kd * floor(sDotN * levels) * scaleFactor * col;  
+This formula makes sure the value is rounded to a specific value. In the case that there is 4 levels of shading the values could be  
+- 0.0
+- 0.25
+- 0.5
+- 0.75  
+
+<h2>Code navigation<h2> 
+Everything to do with blinn phong calculations and texture calculations is found in the fragment shader. The vertex shader only sends some infomation 
+across thats needed in the fragment shader. In scene_basic.cpp initScene method is where lighting and textures are set up and bound. In 
+scene_basic.cpp render method is where all the meshes and materials are set up. A uniform boolean variable called **texUse** is also set up in the fragment 
+shader and is used to determine what textures need to be used for the shaders.  
+
+<h2>YouTube link<h2>
+https://www.youtube.com/watch?v=q8Ei8o8md2o 

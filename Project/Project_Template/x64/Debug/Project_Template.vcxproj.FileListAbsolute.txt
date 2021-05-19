@@ -1,0 +1,2 @@
+D:\Graphics Pipelines\Project\Project_Template\x64\Debug\Project_Template.exe
+D:\Graphics Pipelines\Project\Project_Template\x64\Debug\Project_Template.pdb
