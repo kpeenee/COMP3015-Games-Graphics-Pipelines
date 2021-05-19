@@ -1,9 +1,13 @@
 #version 460
 
 //in variable that receives the diffuse calculation from the vertex shader
-in vec3 Position;
-in vec3 Normal;
-in vec2 TexCoord;
+uniform vec4 LineColor;
+
+in vec3 GPosition;
+in vec3 GNormal;
+in vec2 GTexCoord;
+
+flat in int GIsEdge;
 
 //out variable, this typical for all fragment shaders
 layout (location = 0) out vec4 FragColor;
@@ -44,13 +48,13 @@ vec3 blinnPhongModel( int light, vec3 position, vec3 n )
    vec4 decorationColour;
    if(texUse == false)
    {
-         baseColour = texture(BrickTex, TexCoord);
-         decorationColour = texture(MossTex, TexCoord);
+         baseColour = texture(BrickTex, GTexCoord);
+         decorationColour = texture(MossTex, GTexCoord);
    }
    if(texUse != false)
    {
-         baseColour = texture(CraigTex, TexCoord);
-         decorationColour = texture(DirtTex, TexCoord);
+         baseColour = texture(CraigTex, GTexCoord);
+         decorationColour = texture(DirtTex, GTexCoord);
    }
         
    
@@ -77,12 +81,19 @@ vec3 blinnPhongModel( int light, vec3 position, vec3 n )
  return ambient + Lights[light].L * (diffuse + spec);
 }
 
+
+
 void main()
 {
     //we pass LightInyensity to outr FragColor, notice the difference between vector types
     // vec3 and vec4 and how we solved the problem
     vec3 Colour = vec3(0.0);
+    if(GIsEdge == 1){
+        FragColor = LineColor;
+    } else{
     for( int i = 0; i < 3; i++ )
-        Colour += blinnPhongModel( i, Position, normalize(Normal));
-    FragColor = vec4(Colour, 1.0);
+        Colour += blinnPhongModel( i, GPosition, normalize(GNormal));
+        FragColor = vec4(Colour, 1.0);
+         }
+    
 }

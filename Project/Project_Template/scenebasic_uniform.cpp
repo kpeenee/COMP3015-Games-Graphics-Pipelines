@@ -18,7 +18,7 @@ const float radius = 10.0f;
 //constructor for torus
 SceneBasic_Uniform::SceneBasic_Uniform() : plane(10.0f, 10.0f, 100, 100) 
 {
-    mesh = ObjMesh::load("media/Craig.obj",
+    mesh = ObjMesh::loadWithAdjacency("media/Craig.obj",
         true);
 }
 
@@ -46,6 +46,10 @@ void SceneBasic_Uniform::initScene()
         prog.setUniform(name.str().c_str(), view * glm::vec4(x, 1.2f, z +
             1.0f, 1.0f));
     }
+
+    prog.setUniform("EdgeWidth", 0.015f);
+    prog.setUniform("PctExtend", 0.25f);
+    prog.setUniform("LineColor", vec4(0.05f, 0.0f, 0.05f, 1.0f));
 
     prog.setUniform("Lights[0].L", vec3(0.0f, 0.0f, 1.0f));
     prog.setUniform("Lights[1].L", vec3(0.0f, 1.0f, 0.0f));
@@ -78,6 +82,7 @@ void SceneBasic_Uniform::compile()
 {
 	try {
 		prog.compileShader("shader/basic_uniform.vert");
+        prog.compileShader("basic_uniform.gs");
 		prog.compileShader("shader/basic_uniform.frag");
 		prog.link();
 		prog.use();
@@ -108,28 +113,39 @@ void SceneBasic_Uniform::render()
     setMatrices();
     mesh->render();
 
-    
-    prog.setUniform("Material.Kd", 0.3f, 0.3f, 0.3f);
+    prog.setUniform("Material.Kd", 0.4f, 0.4f, 0.4f);
     prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
-    prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
-    prog.setUniform("Material.Shininess", 180.0f);
-    prog.setUniform("texUse", false);
+    prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    prog.setUniform("Material.Shininess", 50.0f);
+    prog.setUniform("texUse", true);
     model = mat4(1.0f);
-    model = glm::translate(model, vec3(2.0f, 0.0f, 0.0f));
+    glm::vec3 scale = glm::vec3(10.0f, 10.0f, 10.0f);
+    model = glm::scale(model, scale);
+    model = glm::rotate(model, glm::radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
+    model = glm::translate(model, vec3(0.0f, -0.5f, 0.55f));
     setMatrices();
-    cube.render();
-
-    prog.setUniform("Material.Kd", 0.3f, 0.3f, 0.3f);
-    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
-    prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
-    prog.setUniform("Material.Shininess", 180.0f);
-    prog.setUniform("texUse", false);
-    model = mat4(1.0f);
-    model = glm::translate(model, vec3(0.0f, -0.45f, 0.0f));
-    setMatrices();
-    plane.render();
+    mesh->render();
 
     
+    //prog.setUniform("Material.Kd", 0.3f, 0.3f, 0.3f);
+    //prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+    //prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
+    //prog.setUniform("Material.Shininess", 180.0f);
+    //prog.setUniform("texUse", false);
+    //model = mat4(1.0f);
+    //model = glm::translate(model, vec3(2.0f, 0.0f, 0.0f));
+    //setMatrices();
+    //cube.render();
+
+    //prog.setUniform("Material.Kd", 0.3f, 0.3f, 0.3f);
+    //prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+    //prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
+    //prog.setUniform("Material.Shininess", 180.0f);
+    //prog.setUniform("texUse", false);
+    //model = mat4(1.0f);
+    //model = glm::translate(model, vec3(0.0f, -0.45f, 0.0f));
+    //setMatrices();
+    //plane.render();
 }
 
 void SceneBasic_Uniform::setMatrices()

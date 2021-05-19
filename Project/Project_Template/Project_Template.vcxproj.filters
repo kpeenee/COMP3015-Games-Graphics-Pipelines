@@ -74,6 +74,9 @@
     <None Include="shader\basic_uniform.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="basic_uniform.gs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="helper\scene.h">
@@ -130,5 +133,13 @@
     <ClInclude Include="helper\texture.h">
       <Filter>helper</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project_Template.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
