@@ -97,15 +97,18 @@ void SceneBasic_Uniform::update( float t )
 	//update your angle here
     view = glm::lookAt(vec3(0.5f * sin(t) * radius, 5.75f, 0.75f * cos(t) * radius), vec3(0.0f, 1.0f, 0.0f),
         vec3(0.0f, 1.0f, 0.0f));
+    time = t;
 }
 
 void SceneBasic_Uniform::render()
 {
+    prog.setUniform("Time", time);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     prog.setUniform("Material.Kd", 0.4f, 0.4f, 0.4f);
     prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
     prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
     prog.setUniform("Material.Shininess", 50.0f);
+    prog.setUniform("Animate", true);
     prog.setUniform("texUse", true);
     model = mat4(1.0f);
     model = glm::rotate(model, glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
@@ -117,6 +120,31 @@ void SceneBasic_Uniform::render()
     prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
     prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
     prog.setUniform("Material.Shininess", 50.0f);
+    prog.setUniform("Animate", true);
+    prog.setUniform("texUse", true);
+    model = mat4(1.0f);
+    model = glm::rotate(model, glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, vec3(0.0f, 1.5f, 1.0f));
+    setMatrices();
+    mesh->render();
+
+    prog.setUniform("Material.Kd", 0.4f, 0.4f, 0.4f);
+    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+    prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    prog.setUniform("Material.Shininess", 50.0f);
+    prog.setUniform("Animate", true);
+    prog.setUniform("texUse", true);
+    model = mat4(1.0f);
+    model = glm::rotate(model, glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, vec3(0.0f, 1.5f, -1.0f));
+    setMatrices();
+    mesh->render();
+
+    prog.setUniform("Material.Kd", 0.4f, 0.4f, 0.4f);
+    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+    prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    prog.setUniform("Material.Shininess", 50.0f);
+    prog.setUniform("Animate", false);
     prog.setUniform("texUse", true);
     model = mat4(1.0f);
     glm::vec3 scale = glm::vec3(10.0f, 10.0f, 10.0f);

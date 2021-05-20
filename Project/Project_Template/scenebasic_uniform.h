@@ -23,6 +23,8 @@ private:
     Plane plane; //plane surface
     std::unique_ptr<ObjMesh> mesh; //pig mesh
 
+    float time;
+
     //Teapot teapot;
 
     void setMatrices();
