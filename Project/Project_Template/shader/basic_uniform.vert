@@ -10,6 +10,9 @@ out vec3 VPosition;
 out vec3 VNormal;
 out vec2 VTexCoord;
  
+ uniform float Freq = 2.5;
+ uniform float Velocity = 2.5;
+ uniform float Amp = 0.6;
 
 //uniforms for matrices required in the shader
 uniform mat4 ModelViewMatrix;   //model view matrix

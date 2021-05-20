@@ -48,7 +48,7 @@ void SceneBasic_Uniform::initScene()
     }
 
     prog.setUniform("EdgeWidth", 0.015f);
-    prog.setUniform("PctExtend", 0.25f);
+    prog.setUniform("PctExtend", 0.0005f);
     prog.setUniform("LineColor", vec4(0.05f, 0.0f, 0.05f, 1.0f));
 
     prog.setUniform("Lights[0].L", vec3(0.0f, 0.0f, 1.0f));
