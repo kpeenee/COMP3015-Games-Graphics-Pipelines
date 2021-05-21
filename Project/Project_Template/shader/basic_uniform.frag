@@ -9,6 +9,8 @@ in vec2 GTexCoord;
 
 flat in int GIsEdge;
 
+
+
 //out variable, this typical for all fragment shaders
 layout (location = 0) out vec4 FragColor;
 
@@ -85,6 +87,7 @@ vec3 blinnPhongModel( int light, vec3 position, vec3 n )
 
 void main()
 {
+    float Gamma = 1.5;
     //we pass LightInyensity to outr FragColor, notice the difference between vector types
     // vec3 and vec4 and how we solved the problem
     vec3 Colour = vec3(0.0);
@@ -93,7 +96,7 @@ void main()
     } else{
     for( int i = 0; i < 3; i++ )
         Colour += blinnPhongModel( i, GPosition, normalize(GNormal));
-        FragColor = vec4(Colour, 1.0);
+        FragColor = FragColor = vec4( pow( Colour, vec3(1.0/Gamma) ), 1.0 );
          }
     
 }
