@@ -16,11 +16,13 @@ layout (location = 0) out vec4 FragColor;
 
 
 layout(binding = 0) uniform sampler2D BrickTex;
-layout(binding=1) uniform sampler2D MossTex;
+layout(binding = 1) uniform sampler2D MossTex;
 layout(binding = 2) uniform sampler2D CraigTex;
 layout(binding = 3) uniform sampler2D DirtTex;
+layout(binding = 4) uniform sampler2D NoiseTex;
 
 uniform bool texUse;
+uniform float threshold;
 
 
 //light information struct
@@ -87,10 +89,18 @@ vec3 blinnPhongModel( int light, vec3 position, vec3 n )
 
 void main()
 {
+    
     float Gamma = 1.5;
     //we pass LightInyensity to outr FragColor, notice the difference between vector types
     // vec3 and vec4 and how we solved the problem
     vec3 Colour = vec3(0.0);
+
+    vec4 noise = texture(NoiseTex,GTexCoord);
+
+    if(noise.a < threshold)
+        discard;
+    
+
     if(GIsEdge == 1){
         FragColor = LineColor;
     } else{

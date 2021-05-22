@@ -62,6 +62,7 @@ void SceneBasic_Uniform::initScene()
     GLuint moss = Texture::loadTexture("media/texture/moss.png");
     GLuint craig = Texture::loadTexture("media/texture/Craig.png");
     GLuint dirt = Texture::loadTexture("media/texture/Dirty_Craig.png");
+    GLuint noise = Texture::loadTexture("media/texture/Noise.png");
    
     
     // Load brick texture file into channel 0
@@ -76,6 +77,9 @@ void SceneBasic_Uniform::initScene()
     // Load dirt texture file into channel 3
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, dirt);
+    // Load noise into channel 4
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, noise);
 }
 
 void SceneBasic_Uniform::compile()
@@ -110,6 +114,7 @@ void SceneBasic_Uniform::render()
     prog.setUniform("Material.Shininess", 50.0f);
     prog.setUniform("Animate", true);
     prog.setUniform("texUse", true);
+    
     model = mat4(1.0f);
     model = glm::rotate(model, glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
     model = glm::translate(model, vec3(0.0f, 1.5f, 0.0f));
@@ -145,6 +150,7 @@ void SceneBasic_Uniform::render()
     prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
     prog.setUniform("Material.Shininess", 50.0f);
     prog.setUniform("Animate", false);
+    prog.setUniform("threshold", sin(time));
     prog.setUniform("texUse", true);
     model = mat4(1.0f);
     glm::vec3 scale = glm::vec3(10.0f, 10.0f, 10.0f);
