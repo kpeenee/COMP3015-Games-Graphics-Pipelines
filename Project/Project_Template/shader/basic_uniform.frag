@@ -45,7 +45,7 @@ uniform struct MaterialInfo
 const int levels = 4;
 const float scaleFactor = 1.0 / levels;
 
-vec3 blinnPhongModel( int light, vec3 position, vec3 n )
+vec3 toonShading( int light, vec3 position, vec3 n )
 {
    //Get Tex Colour
    vec4 baseColour;
@@ -73,16 +73,8 @@ vec3 blinnPhongModel( int light, vec3 position, vec3 n )
   float sDotN = max( dot(s,n), 0.0 );       //calculate dot product
   vec3 diffuse = Material.Kd * floor(sDotN * levels) * scaleFactor * col;       // Diffuse calculation
 
-  //Specular
-  vec3 spec = vec3(0.0);
-  if( sDotN > 0.0 )
-    {
-        vec3 v = normalize(-position.xyz);
-        vec3 h = normalize(v + s);
-        spec = Material.Ks * pow( max( dot(h,n), 0.0 ),
-                                  Material.Shininess );
-    }
- return ambient + Lights[light].L * (diffuse + spec);
+
+ return ambient + Lights[light].L * diffuse ;
 }
 
 
@@ -105,7 +97,7 @@ void main()
         FragColor = LineColor;
     } else{
     for( int i = 0; i < 3; i++ )
-        Colour += blinnPhongModel( i, GPosition, normalize(GNormal));
+        Colour += toonShading( i, GPosition, normalize(GNormal));
         FragColor = FragColor = vec4( pow( Colour, vec3(1.0/Gamma) ), 1.0 );
          }
     

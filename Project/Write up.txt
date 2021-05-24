@@ -4,51 +4,63 @@
 - Windows 10
 - Visual studio 2019  
 
+<h2>How To Open<h2>  
+There is a folder called build. Click on Build > Debug then open the Project_Template application to view 
+
+<h2>What is This Project<h2>  
+This project shows off the new version of Craig. Craig is a goofy looking model I made in blender and this project aims to make a goofy looking scene
+with Craig and his new worm buddies.
+
 <h2>How the project works<h2>  
-This project consists of a central model called **Craig** and he is standing in an environment filled with bricks. 
-For this project I have used the Blinn phong lighting model, multiple textures and some toon shading.  
+The project now uses some Gamma Correction to get the correct colours. This was done using the formula  
+vec4( pow( colour, vec3(1.0/Gamma) ), 1.0 );  
 
-For the Blinn phong model, 3 lights in the scene. Each light has a position, ambient, diffuse, and specular 
-intensity. This array of lights is set up in the fragment shader as a uniform struct called **LightInfo**. In the **initScene** method of scenebasic_uniform.cpp 
-these uniforms are set so they can be used for calculations. For the blinn phong model the objects material needs to be known 
-as well so another uniform struct called **MaterialInfo** is created in the fragment shader. This struct takes in a value for diffuse, specular and
-ambient reflectivity and a value for shininess. These values are set for each object in the **render** method of scenbasic_uniform. 
-The final piece of infomation needed for the lighting is the **normal** and **position** of the model in view coordinates. This is 
-done in the vertex shader by using these formulas.  
-- Normal = normalize( NormalMatrix * VertexNormal);
-- Position =  (ModelViewMatrix * vec4(VertexPosition,1.0)).xyz;  
-Once these values have been worked out, they are sent from the vertex shader to the fragment shader.  
-The ambient colour is worked out simply by using the lights ambient intensity and multiplying it by the materials ambient reflectivity.
-For diffuse, first calculate the direction of the light. This is worked out by normalizing the current lights position 
-take away the objects position in view coordinates. Next, the dot product between the light direction vector and normal vector is worked out. 
-Both vectors must be normalized and using the glsl function **max**, a value between 0 and 1 will be returned. This value determines the 
-intensity of diffuse and is finally multiplied by the materials diffuse reflectivity.  
-Finally specular is worked out, this is done in a different way to the usual phong lighting model. In blinn phong a half vector 
-is calculated by adding the ligth direction vector and the objects view vector together. This half vector is then used to work out the 
-dot product between itself and the objects normal and raised to the power of the objects shininess. 
-Finally the dot product is multiplied the materials specular reflectivity. 
-With all the light values worked out they are finally brought together using this formula **ambient + Lights[light].L * (diffuse + spec);**  
+Usually the value 2.2 is used for gamma but I felt it was too bright for my scene so I used 1.5 instead.  
 
-For the textures, they are each bound to a sampler2D. In the vertex shader a value for the texture cordinate is sent to the fragment 
-shader. For the scene **Craig** has a base texture for himself and another texture with dirt that is placed ontop. 
-This is done in the fragment shader by working out the current fragment colour for both base and dirt textures using the glsl funtion **texture**, 
-and then these colours get mixed together using the glsl function **mix**. This mixed colour can then be used in the calculations for 
-ambient and diffuse lighting by simply multiplying them by the mixed colour. 
+This scene contains 3 lights that is set up using a struct called LightInfo. This struct takes information for the Ambient and Diffuse intensity. 
+These values are used for some toon shading. For the toon shading a number for levels of shading was used. I set it to 4 and using  
+const float scaleFactor = 1.0 / levels;  
+The value assigned to a pixel for lighting can be clamped to either 0.0, 0.25, 0.5, 0.75. To work this out I got the direction of a light by using:  
+s = normalize(vec3(Lights[light].Position) - position);  
+Then find the dot product between the normal and the lights direction with:  
+sDotN = max( dot(s,n), 0.0 );  
+Then a final colour can be gained by doing:  
+Material.Kd * floor(sDotN * levels) * scaleFactor * col; 
 
-For toon shading, two constants are created in the fragment shader one for the amount of levels of shading, and a scale factor to be used in calculation. 
-The scale factor is worked out by doing 1/levels. All that needs to be changed if the formula for working out the diffuse colour. This is changed to  
-Material.Kd * floor(sDotN * levels) * scaleFactor * col;  
-This formula makes sure the value is rounded to a specific value. In the case that there is 4 levels of shading the values could be  
-- 0.0
-- 0.25
-- 0.5
-- 0.75  
+I have created a dissolve effect by using a noise. I created a noise texture in GIMP to be used for the effect. 
+The shader can read the alpha value of a pixel, returning a value between 0 and 1, and use it to create different effects. In the fragment shader, 
+if the alpha of the current noise texture is below a threshold, then the current pixel on the other textures are discarded. This 
+creates some holes on the object. To create the dissolve animation, I made the threshold a uniform variable and then in scenebasic_uniform.cpp 
+it sets a value for threshold based on sin(time). This will return value's each frame between -1 and 1. I could have used 
+abs(Threshold) to make sure negative value's were made positive but prefered it without so the scene stayed untouched for a few seconds before 
+beginning to dissolve again.  
 
-<h2>Code navigation<h2> 
-Everything to do with blinn phong calculations and texture calculations is found in the fragment shader. The vertex shader only sends some infomation 
-across thats needed in the fragment shader. In scene_basic.cpp initScene method is where lighting and textures are set up and bound. In 
-scene_basic.cpp render method is where all the meshes and materials are set up. A uniform boolean variable called **texUse** is also set up in the fragment 
-shader and is used to determine what textures need to be used for the shaders.  
+To create the worms some vertex animation was done to the surface of some objects. This was done by manipulating vertices in the vertex shader. 
+A formula was used to create the wavey animation the worms use this formula is:  
+n(x, t) = (-A 2πλcos( 2πλ(x – vt)), 1)  
+A – wave’s amplitude (the height of peaks)  
+λ – wavelength (the distance between successive peaks)  
+v – wave velocity    
+t – time  
+This formula is used to move the y position of the vertices.  
+Once these edges have been found, the additional quads will be generated to create the effect.
+
+Some Silhouette shading was used to make the scene look more like a cartoon. Silhouette shading uses a geometry shader to create black lines along 
+the edges of the object by using quads alligned with the edges. A geometry shader executes once for each primitive and 
+can be used to add or remove geometrey from an object. For this effect to be achieved, the geometry shader needs information on adjacent 
+primitives. This is done by using openGL's adjacency modes. In this case GL_TRIANGLES_ADJACENCY is used to get 6 vertices. 
+With this infomation a silhouette edge can be determined if the triangle is facing forward but the corresponding adjacent is not facing forward. 
+To determine if a triangle is front facing the triangles normal is used. Then using eye coordinates, if the z coordinate of the normal vector is 
+positive then it is a front facing triangle. A formula can be used to work this out:  
+nz = (AxBy - BxAy) + (BxCy - CxBy) + (CxAy -AxCy)  
+This formula returns the normal vector then check if z is positive or negative.
+
+<h2>Code navigation<h2>  
+The fragment shader (basic_uniform.frag) contains all the code for gamma correction, noise and toon shading.  
+The geometry shader (basic_uniform.gs) contains the silhouette code.  
+The vertex shader (basic_uniform.vert) contains all the code for animation.  
+Everything needed to setup the scene is located in scenebasic_uniform.cpp. This contains the code for setting up the lights, models, noise and animation parameters.
+
 
 <h2>YouTube link<h2>
-https://www.youtube.com/watch?v=q8Ei8o8md2o 
+https://youtu.be/fkCVczuJUps

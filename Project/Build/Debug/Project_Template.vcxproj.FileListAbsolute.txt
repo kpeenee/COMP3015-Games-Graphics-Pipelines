@@ -1,0 +1,4 @@
+D:\Graphics Pipelines\Project\Project_Template\x64\Debug\Project_Template.exe
+D:\Graphics Pipelines\Project\Project_Template\x64\Debug\Project_Template.pdb
+D:\Graphics Pipelines\COMP3015-Games-Graphics-Pipelines\Project\Project_Template\x64\Debug\Project_Template.exe
+D:\Graphics Pipelines\COMP3015-Games-Graphics-Pipelines\Project\Project_Template\x64\Debug\Project_Template.pdb
