@@ -1,8 +1,6 @@
 # COMP3015 Games Graphics Pipelines  
-<h1>Project write up<h1>
-
 <h2>Technology<h2>  
-- Windows 10
+- Windows 10  
 - Visual studio 2019  
 
 <h2>How To Open<h2>  
@@ -44,7 +42,7 @@ A – wave’s amplitude (the height of peaks)
 v – wave velocity    
 t – time  
 This formula is used to move the y position of the vertices.  
-Once these edges have been found, the additional quads will be generated to create the effect.
+
 
 Some Silhouette shading was used to make the scene look more like a cartoon. Silhouette shading uses a geometry shader to create black lines along 
 the edges of the object by using quads alligned with the edges. A geometry shader executes once for each primitive and 
@@ -54,7 +52,8 @@ With this infomation a silhouette edge can be determined if the triangle is faci
 To determine if a triangle is front facing the triangles normal is used. Then using eye coordinates, if the z coordinate of the normal vector is 
 positive then it is a front facing triangle. A formula can be used to work this out:  
 nz = (AxBy - BxAy) + (BxCy - CxBy) + (CxAy -AxCy)  
-This formula returns the normal vector then check if z is positive or negative.
+This formula returns the normal vector then check if z is positive or negative. 
+Once these edges have been found, the additional quads will be generated to create the effect.
 
 <h2>Code navigation<h2>  
 The fragment shader (basic_uniform.frag) contains all the code for gamma correction, noise and toon shading.  
