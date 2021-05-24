@@ -60,6 +60,8 @@ The geometry shader (basic_uniform.gs) contains the silhouette code.
 The vertex shader (basic_uniform.vert) contains all the code for animation.  
 Everything needed to setup the scene is located in scenebasic_uniform.cpp. This contains the code for setting up the lights, models, noise and animation parameters.
 
+<h2>GitHub<h2>
+https://github.com/kpeenee/COMP3015-Games-Graphics-Pipelines
 
 <h2>YouTube link<h2>
 https://youtu.be/fkCVczuJUps
